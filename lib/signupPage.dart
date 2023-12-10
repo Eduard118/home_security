@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_flutter_v2/loginPage.dart';
+import 'package:test_flutter_v2/services/auth.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -11,9 +12,12 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
 
-  final TextEditingController _emailTeC = TextEditingController();
-  final TextEditingController _psswTeC = TextEditingController();
+  final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final TextEditingController _psswConfirmTeC = TextEditingController();
+
+  final AuthService _auth = AuthService();
+
 
   bool showPssw = false;
   bool showConfirmPssw = false;
@@ -130,7 +134,7 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 30,),
 
                     TextFormField(
-                      controller: _emailTeC,
+                      controller: emailCtrl,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5),
@@ -155,7 +159,7 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 20,),
 
                     TextFormField(
-                      controller: _psswTeC,
+                      controller: passwordController,
                       obscureText: showPssw ? false : true,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -225,8 +229,8 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 30,),
 
                     InkWell(
-                      onTap: () {
-
+                      onTap: () async{
+                        await registerAccount();
                       },
                       child: Container(
                         height: 50,
@@ -320,5 +324,68 @@ class _SignupPageState extends State<SignupPage> {
         ],
       ),
     );
+  }
+
+  Future<void> registerAccount() async  {
+    WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+
+    if(!RegExp(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+        .hasMatch(emailCtrl.text)||passwordController.text.length < 6){
+
+      if(!RegExp(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)").hasMatch(emailCtrl.text)){
+        /*ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_localizedValues[Globals.langValue]!["si_snack_invalidEmailOrPass"]!),
+              backgroundColor: Colors.red,
+            ));
+        focusNodeEmail.requestFocus();*/
+        emailCtrl.value = emailCtrl.value.copyWith(selection: TextSelection(baseOffset: 0, extentOffset: emailCtrl.text.length));
+      }
+      else {
+        /*ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_localizedValues[Globals.langValue]!["si_snack_invalidEmailOrPass"]!),
+              backgroundColor: Colors.red,
+            ));
+        focusNodePassword.requestFocus();*/
+        passwordController.value = passwordController.value.copyWith(selection: TextSelection(baseOffset: 0, extentOffset: passwordController.text.length));
+      }
+
+      return;
+    }
+    try {
+      if (1 == 1) {
+        String? text;
+        if(mounted) {
+          setState(() {
+          emailCtrl.text = emailCtrl.text.replaceAll(RegExp(r"\s*"), '');
+        });
+        }
+
+        dynamic result = await _auth.registerWithEmailAndPassword(emailCtrl.text, passwordController.text);
+        if (result == null) {
+          setState(() {
+            emailCtrl.clear();
+            passwordController.clear();
+          });
+
+        }
+        else if (result == false) {
+          setState(() {
+            emailCtrl.clear();
+            passwordController.clear();
+            //password = '';
+          });
+         ///TODO - PRESENT ERROR HERE
+          //await _presentError(text);
+        }
+      }
+    }
+    catch(e) {
+      emailCtrl.clear();
+      passwordController.clear();
+    }
+    emailCtrl.clear();
+    passwordController.clear();
   }
 }
