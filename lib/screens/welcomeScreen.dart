@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:test_flutter_v2/signupPage.dart';
+import 'package:test_flutter_v2/screens/signupPage.dart';
 
 import 'loginPage.dart';
 

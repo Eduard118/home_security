@@ -1,26 +1,55 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:test_flutter_v2/loginPage.dart';
+import 'package:test_flutter_v2/screens/landingPage.dart';
 import 'package:test_flutter_v2/services/auth.dart';
+import 'dart:math' as math;
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+import 'package:test_flutter_v2/screens/signupPage.dart';
+
+import '../globals/globals.dart';
+import '../models/user.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _LoginPageState extends State<LoginPage> {
 
-  final TextEditingController emailCtrl = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController _psswConfirmTeC = TextEditingController();
+  final TextEditingController _emailTeC = TextEditingController();
+  final TextEditingController _psswTeC = TextEditingController();
+
+  bool showPssw = false;
+  bool emailOrPsswWrong = false;
 
   final AuthService _auth = AuthService();
 
+  Future<void> getLogInProcess() async{
 
-  bool showPssw = false;
-  bool showConfirmPssw = false;
+    dynamic result = await _auth.signInWithEmailAndPassword(_emailTeC.text, _psswTeC.text);
+
+    if(result != null){
+      if(result != false){
+        Globals.usEmail = _emailTeC.text;
+        Globals.usPssw = _psswTeC.text;
+
+        emailOrPsswWrong = false;
+        if(context.mounted) {
+          await Navigator.push(context,MaterialPageRoute(
+            builder: (context) => const LandingPage(),
+          ));
+        }
+      }
+      else{
+        emailOrPsswWrong = true;
+      }
+    }
+    else{
+      emailOrPsswWrong = true;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -116,15 +145,20 @@ class _SignupPageState extends State<SignupPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Create Account', textAlign: TextAlign.center ,style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                        fontSize: 38
-                    ),),
+                    InkWell(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Login here', textAlign: TextAlign.center ,style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                          fontSize: 40
+                      ),),
+                    ),
 
                     const Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text("Sign up to explore your home security privileges.", textAlign: TextAlign.center, style: TextStyle(
+                      child: Text("Welcome back you've \n been missed!", textAlign: TextAlign.center, style: TextStyle(
                           color: Colors.black87,
                           fontWeight: FontWeight.bold,
                           fontSize: 20
@@ -134,7 +168,7 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 30,),
 
                     TextFormField(
-                      controller: emailCtrl,
+                      controller: _emailTeC,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5),
@@ -159,7 +193,7 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 20,),
 
                     TextFormField(
-                      controller: passwordController,
+                      controller: _psswTeC,
                       obscureText: showPssw ? false : true,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -191,46 +225,38 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 20,),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: InkWell(
+                          onTap: (){
 
-                    TextFormField(
-                      controller: _psswConfirmTeC,
-                      obscureText: showConfirmPssw ? false : true,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          focusedBorder:  const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(
-                                  width: 2,
-                                  color: Colors.blue)),
-
-                          enabledBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(color: Colors.transparent),
-                          ),
-                          suffixIcon: InkWell(
-                              borderRadius: BorderRadius.circular(30),
-                              onTap: (){
-                                showConfirmPssw = !showConfirmPssw;
-                                setState(() {
-
-                                });
-                              },
-                              child: showConfirmPssw ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)),
-                          filled: true,
-                          fillColor: Colors.blue.withOpacity(0.2),
-                          hintText: 'Confirm Password',
-                          hintStyle: const TextStyle(fontWeight: FontWeight.bold)
+                          },
+                          child: const Text('Forgot your password?', style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold
+                          ),),
+                        ),
                       ),
                     ),
 
+                     emailOrPsswWrong ? const Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Text('Email or password invalid!', style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold
+                        ),),
+                      ),
+                    ) : const SizedBox.shrink(),
                     const SizedBox(height: 30,),
 
                     InkWell(
                       onTap: () async{
-                        await registerAccount();
+                        //var result = await _auth.signInWithEmailAndPassword(_emailTeC.text, _psswTeC.text);
+                        await getLogInProcess();
                       },
                       child: Container(
                         height: 50,
@@ -246,7 +272,7 @@ class _SignupPageState extends State<SignupPage> {
                           ],
                         ),
                         child: const Center(
-                          child: Text('Sign up', style: TextStyle(
+                          child: Text('Sign in', style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 20
@@ -259,12 +285,12 @@ class _SignupPageState extends State<SignupPage> {
                       onTap: (){
                         Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const LoginPage())
+                            MaterialPageRoute(builder: (context) => const SignupPage())
                         );
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(16.0),
-                        child: Text('Already have an account', style: TextStyle(
+                        child: Text('Create new account', style: TextStyle(
                             color: Colors.black54,
                             fontWeight: FontWeight.bold
                         ),),
@@ -324,68 +350,5 @@ class _SignupPageState extends State<SignupPage> {
         ],
       ),
     );
-  }
-
-  Future<void> registerAccount() async  {
-    WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-
-    if(!RegExp(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
-        .hasMatch(emailCtrl.text)||passwordController.text.length < 6){
-
-      if(!RegExp(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)").hasMatch(emailCtrl.text)){
-        /*ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_localizedValues[Globals.langValue]!["si_snack_invalidEmailOrPass"]!),
-              backgroundColor: Colors.red,
-            ));
-        focusNodeEmail.requestFocus();*/
-        emailCtrl.value = emailCtrl.value.copyWith(selection: TextSelection(baseOffset: 0, extentOffset: emailCtrl.text.length));
-      }
-      else {
-        /*ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_localizedValues[Globals.langValue]!["si_snack_invalidEmailOrPass"]!),
-              backgroundColor: Colors.red,
-            ));
-        focusNodePassword.requestFocus();*/
-        passwordController.value = passwordController.value.copyWith(selection: TextSelection(baseOffset: 0, extentOffset: passwordController.text.length));
-      }
-
-      return;
-    }
-    try {
-      if (1 == 1) {
-        String? text;
-        if(mounted) {
-          setState(() {
-          emailCtrl.text = emailCtrl.text.replaceAll(RegExp(r"\s*"), '');
-        });
-        }
-
-        dynamic result = await _auth.registerWithEmailAndPassword(emailCtrl.text, passwordController.text);
-        if (result == null) {
-          setState(() {
-            emailCtrl.clear();
-            passwordController.clear();
-          });
-
-        }
-        else if (result == false) {
-          setState(() {
-            emailCtrl.clear();
-            passwordController.clear();
-            //password = '';
-          });
-         ///TODO - PRESENT ERROR HERE
-          //await _presentError(text);
-        }
-      }
-    }
-    catch(e) {
-      emailCtrl.clear();
-      passwordController.clear();
-    }
-    emailCtrl.clear();
-    passwordController.clear();
   }
 }
