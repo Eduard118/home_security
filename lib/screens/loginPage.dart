@@ -309,14 +309,19 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                              color: Colors.black12,
-                              borderRadius: BorderRadius.circular(10)
+                        InkWell(
+                          onTap: (){
+                            _auth.signInWithGoogle();
+                          },
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius: BorderRadius.circular(10)
+                            ),
+                            child: const Icon(Icons.g_mobiledata, size: 40,),
                           ),
-                          child: const Icon(Icons.g_mobiledata, size: 40,),
                         ),
 
                         Padding(
