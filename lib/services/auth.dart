@@ -71,7 +71,7 @@ class AuthService {
     }
   }
 
-  Future<void> signInWithGoogle() async{
+  Future<dynamic> signInWithGoogle() async{
 
     try {
       GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -83,12 +83,15 @@ class AuthService {
           idToken: googleAuth?.idToken
       );
 
-      UserCredential user = await FirebaseAuth.instance.signInWithCredential(
+      UserCredential x = await FirebaseAuth.instance.signInWithCredential(
           credential);
 
-      if(kDebugMode){
+      User? user = x.user;
+      return user;
+
+      /*if(kDebugMode){
         print(user.user?.displayName);
-      }
+      }*/
     }catch(e, str){
       print('$e: $str');
     }
