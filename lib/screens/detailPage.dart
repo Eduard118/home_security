@@ -138,9 +138,8 @@ class _DetailPageState extends State<DetailPage> {
               },
               child: Text('Power Off'),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12), backgroundColor: Colors.redAccent,
                 textStyle: TextStyle(fontSize: 18),
-                primary: Colors.redAccent,
               ),
             ),
           ],

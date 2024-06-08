@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'detailPage.dart';
 
@@ -12,6 +13,80 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  final databaseReference = FirebaseDatabase.instance.ref().child('sensorData');
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  // Local state to track previous values
+  bool previousFireDetected = false;
+  bool previousGasDetected = false;
+  bool previousMotionDetected = false;
+  bool previousWaterDetected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+    final InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    monitorDatabaseChanges();
+  }
+
+  void monitorDatabaseChanges() {
+    databaseReference.onValue.listen((event) {
+      final data = event.snapshot.value as Map;
+
+      bool fireDetected = data['fireDetected'] ?? false;
+      bool gasDetected = data['gasDetected'] ?? false;
+      bool motionDetected = data['motionDetected'] ?? false;
+      bool waterDetected = data['waterDetected'] ?? false;
+
+      // Check for changes and send notifications accordingly
+      if (fireDetected && !previousFireDetected) {
+        _showNotification('Fire Alert', 'Fire detected!');
+      }
+      if (gasDetected && !previousGasDetected) {
+        _showNotification('Gas Alert', 'Gas leak detected!');
+      }
+      if (motionDetected && !previousMotionDetected) {
+        _showNotification('Motion Alert', 'Motion detected!');
+      }
+      if (waterDetected && !previousWaterDetected) {
+        _showNotification('Water Alert', 'Water detected!');
+      }
+
+      // Update the local state with current values
+      previousFireDetected = fireDetected;
+      previousGasDetected = gasDetected;
+      previousMotionDetected = motionDetected;
+      previousWaterDetected = waterDetected;
+    });
+  }
+
+  Future<void> _showNotification(String title, String body) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'sensor_alerts_channel', // channelId
+      'Sensor Alerts', // channelName
+      channelDescription:
+      'Notifications for sensor alerts such as fire, gas, motion, and water detection', // channelDescription
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: 'item x',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final DatabaseReference _databaseReference = FirebaseDatabase.instance.ref();
@@ -19,7 +94,7 @@ class _LandingPageState extends State<LandingPage> {
     ///Read realtime time in realtime database
     return Scaffold(
       appBar: AppBar(
-        title: Text('Realtime Database Example'),
+        title: const Text('Realtime Database Example'),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
@@ -28,7 +103,7 @@ class _LandingPageState extends State<LandingPage> {
             MaterialPageRoute(builder: (context) => DetailPage()),
           );
         } ,
-        child: Text('Detalii'),
+        child: const Text('Detalii'),
       ),
       body: StreamBuilder(
         stream: _databaseReference.onValue,
@@ -45,40 +120,11 @@ class _LandingPageState extends State<LandingPage> {
               },
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
     );
 
-    ///Read realtime firestore database
-    return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("test_collection")
-              .snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if(!snapshot.hasData){
-              return const CircularProgressIndicator();
-            }
-            final userSnapshot = snapshot.data?.docs;
-            if (userSnapshot!.isEmpty) {
-              return const Text("no data");
-            }
-            return ListView.builder(
-                itemCount: userSnapshot.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    /*leading: CircleAvatar(
-                      child: userSnapshot[index]["test"],
-                    ),*/
-                    title: Text(userSnapshot[index]["test_field"]),
-                  );
-                });
-          }),
-    );
   }
 }
