@@ -1,9 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Internet permission -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Phone call permission -->
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <application
-        android:label="test_flutter_v2"
+        android:label="ShieldSnap"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
@@ -31,6 +33,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- Intent filter for tel: scheme to handle phone calls -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tel" />
             </intent-filter>
         </activity>
 

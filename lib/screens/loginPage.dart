@@ -305,48 +305,48 @@ class _LoginPageState extends State<LoginPage> {
                       ),),
                     ),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: (){
-                            _auth.signInWithGoogle();
-                          },
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                                color: Colors.black12,
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: const Icon(Icons.g_mobiledata, size: 40,),
+                    InkWell(
+                      onTap: (){
+                        _auth.signInWithGoogle();
+                      },
+                      borderRadius: BorderRadius.circular(25),
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 2,
+                            color: Colors.black54
                           ),
+                          borderRadius: BorderRadius.circular(25)
                         ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8.0, bottom: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                height: 40,
+                                width: 40,
+                               /* decoration: BoxDecoration(
+                                    color: Colors.black12,
+                                    borderRadius: BorderRadius.circular(10)
+                                ),*/
+                                child: SizedBox(
+                                    height: 30,
+                                    width: 50,
+                                    child: Image.asset('assets/images/logo_Google.png')), //const Icon(Icons.g_mobiledata, size: 40,),
+                              ),
 
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10, left: 10),
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                                color: Colors.black12,
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: const Icon(Icons.facebook, size: 35,),
+                              const Padding(
+                                padding: EdgeInsets.only(left: 10.0),
+                                child: Text('Sign in with Google', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 18),),
+                              )
+                            ],
                           ),
                         ),
-
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                              color: Colors.black12,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
-                          child: const Icon(Icons.apple, size: 35,),
-                        ),
-                      ],
+                      ),
                     )
                   ]
               ),

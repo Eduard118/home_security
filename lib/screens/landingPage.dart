@@ -50,7 +50,7 @@ class _LandingPageState extends State<LandingPage> {
       if (gasDetected && !previousGasDetected) {
         _showNotification('Gas Alert', 'Gas leak detected!');
       }
-      if (motionDetected && !previousMotionDetected) {
+      if (motionDetected && !previousMotionDetected && false) {
         _showNotification('Motion Alert', 'Motion detected!');
       }
       if (waterDetected && !previousWaterDetected) {

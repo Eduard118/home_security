@@ -306,7 +306,49 @@ class _SignupPageState extends State<SignupPage> {
                       ),),
                     ),
 
-                    Row(
+                    InkWell(
+                      onTap: (){
+                        _auth.signInWithGoogle();
+                      },
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 2,
+                                color: Colors.black54
+                            ),
+                            borderRadius: BorderRadius.circular(25)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8.0, bottom: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                height: 40,
+                                width: 40,
+                                /* decoration: BoxDecoration(
+                                    color: Colors.black12,
+                                    borderRadius: BorderRadius.circular(10)
+                                ),*/
+                                child: SizedBox(
+                                    height: 30,
+                                    width: 50,
+                                    child: Image.asset('assets/images/logo_Google.png')), //const Icon(Icons.g_mobiledata, size: 40,),
+                              ),
+
+                              const Padding(
+                                padding: EdgeInsets.only(left: 10.0),
+                                child: Text('Sign in with Google', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 18),),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                    /*Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -343,7 +385,7 @@ class _SignupPageState extends State<SignupPage> {
                           child: const Icon(Icons.apple, size: 35,),
                         ),
                       ],
-                    )
+                    )*/
                   ]
               ),
             ),
